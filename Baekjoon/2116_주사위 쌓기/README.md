@@ -42,42 +42,97 @@
 ### **🧾나의 풀이**
 
 ```python
+num = int(input())
+dices = [list(map(int, input().split())) for _ in range(num)]
+result = [0] * 6
+pair = [5, 3, 4, 1, 2, 0]
+
+
+for start in range(1, 7):
+    bottom = start
+    bottom_idx = dices[0].index(bottom)
+    top = dices[0][pair[bottom_idx]]
+    top_idx = pair[bottom_idx]
+
+
+    temp_dice = dices[0][:6]
+    temp_dice[top_idx] = -1
+    temp_dice[bottom_idx] = -1
+    result[start-1] += max(temp_dice)
+    for i in range(1, num):
+
+        bottom = top
+        bottom_idx = dices[i].index(bottom)
+    
+        top_idx = pair[bottom_idx]
+        top = dices[i][top_idx]
+
+        temp_dice = dices[i][:6]
+        temp_dice[top_idx] = -1
+        temp_dice[bottom_idx] = -1
+        result[start-1] += max(temp_dice)
+
+print(max(result))
 ```
 
 결과	| 메모리(KB) |	시간(ms) |	언어 |	코드 길이(B)
 :----:|:-----:|:-----:|:-----:|:--------:
-
+정답|32140|500|Python3|735
 #### **📝해설**
 
 **알고리즘**
 ```
-1.
+1. 브루트포스 알고리즘
 ```
-
+결국 경우의 수는 시작점의 숫자의 개수밖에 없으니 총 6개이다  
+따라서 모든 경우의 수를 계산하고 최대값을 구하면 된다
 #### **😅개선점**
 
-1. `for i in range():` 
+1. 함수를 사용해서 불필요한 코드의 중복을 피하면 코드의 길이를 줄일 수 있었을 것이다.
 
-여기서 어쩌구 했으면 더 좋았겠다
 
 ### **다른 풀이**
 
 ```python
+import sys
+
+
+def readline():
+    return sys.stdin.readline().rstrip()
+
+
+def main():
+    n = int(readline())
+
+    top_number = [1, 2, 3, 4, 5, 6]
+    max_side = [0] * 6
+
+    for _ in range(n):
+        a, b, c, d, e, f = map(int, readline().split())
+        dice = {
+            a: (f, max(b, c, d, e)),
+            b: (d, max(a, c, e, f)),
+            c: (e, max(a, b, d, f)),
+            d: (b, max(a, c, e, f)),
+            e: (c, max(a, b, d, f)),
+            f: (a, max(b, c, d, e)),
+        }
+        for i in range(6):
+            top = top_number[i]
+            top_number[i] = dice[top][0]
+            max_side[i] += dice[top][1]
+    print(max(max_side))
+
+
+if __name__ == "__main__":
+    main()
+
 ```
 
-아이디 |	문제	| 문제 제목 |	결과	| 메모리(KB) |	시간(ms) |	언어 |	코드 길이(B) 
-:-----:|:-----:|:---------:|:-----:|:-----:|:-----:|:----:|:--------:
-
-#### **📝해설**
-
-```python
-```
+아이디 |	결과	| 메모리(KB) |	시간(ms) |	언어 |	코드 길이(B) 
+:-----:|:-----:|:-----:|:-----:|:----:|:--------:
+yckang1124|정답|31256|76|Python3|702
 
 ### **🔖정리**
 
-1. 배운점
-
-## 📚참고 사이트
-
-> **[제목]**<br/>
-사이트 주소
+1. 어렵게 생각하지 말고 모든 경우의 수를 고려해보자
