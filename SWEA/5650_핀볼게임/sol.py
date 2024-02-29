@@ -12,6 +12,8 @@ for testcase in range(1, T+1):
     N = int(input())
     board = []
     worm_hole = []
+    max_count = 0
+
     for i in range(N):
         one_line = list(map(int, input().split()))
         board.append(one_line)
@@ -21,14 +23,16 @@ for testcase in range(1, T+1):
 
 
     direction = [(-1, 0), (0, 1), (1, 0), (0, -1)]
-    count_list = []
 
-    for dir in range(4):
-        for i in range(N):
-            for j in range(N):
-                
-                if board[i][j] != 0:
+    
+    for i in range(N):
+        for j in range(N):
+
+            if board[i][j] != 0:
                     continue
+            
+            for dir in range(4):
+                
                 x, y = i, j
                 count = 0
 
@@ -39,19 +43,8 @@ for testcase in range(1, T+1):
                     if x < 0 or x >= N or y < 0 or y >= N:
 
                         dir = (dir+2)%4
-                        x += direction[dir][0]
-                        y += direction[dir][1]
-                        if x == i and y == j:
-                            break
                         count += 1
-
-                    elif board[x][y] == 5:
-                        dir = (dir+2)%4
-                        x += direction[dir][0]
-                        y += direction[dir][1]
-                        if x == i and y == j:
-                            break
-                        count += 1
+                        continue
                         
                     now_position = board[x][y]
 
@@ -66,7 +59,7 @@ for testcase in range(1, T+1):
                     
                     if now_position >= 6:
                         for var in worm_hole:
-                            if now_position == var[0] and x != var[1] and y != var[2]:
+                            if now_position == var[0] and (x != var[1] or y != var[2]):
                                 x = var[1]
                                 y = var[2]
                                 break
@@ -109,9 +102,11 @@ for testcase in range(1, T+1):
                         elif dir == RIGHT:
                             dir = UP
 
-                    count += 1
+                    elif board[x][y] == 5:
+                        dir = (dir+2)%4
                     
-                if count not in count_list:    
-                    count_list.append(count)
-    print(count_list)
-    print(f'#{testcase} {max(count_list)}')
+                    count += 1
+                if max_count < count:
+                    max_count = count
+
+    print(f'#{testcase} {max_count}')
