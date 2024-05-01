@@ -17,8 +17,16 @@ for testcase in range(1, T):
         temp = list(map(int, input().split()))
         # 터널의 키 값은 터널 입구의 좌표. value는 출구의 좌표와 연료 소모량
         # 양방향으로 만들어줌
-        tunnels[(temp[0]-1, temp[1]-1)] = (temp[2]-1, temp[3]-1, temp[4])
-        tunnels[(temp[2]-1, temp[3]-1)] = (temp[0]-1, temp[1]-1, temp[4])
+        # 한 위치에 여러개의 터널이 있을수 있으니, value는 리스트로 저장
+        if tunnels.get((temp[0]-1, temp[1]-1)) is None:
+            tunnels[(temp[0]-1, temp[1]-1)] = [(temp[2]-1, temp[3]-1, temp[4])]
+        else:
+            tunnels[(temp[0]-1, temp[1]-1)].append((temp[2]-1, temp[3]-1, temp[4]))
+        
+        if tunnels.get((temp[2]-1, temp[3]-1)) is None:
+            tunnels[(temp[2]-1, temp[3]-1)] = [(temp[0]-1, temp[1]-1, temp[4])]
+        else:
+            tunnels[(temp[2]-1, temp[3]-1)].append((temp[0]-1, temp[1]-1, temp[4]))
     
     # 임의의 큰 수. 다이스트라 최소값 계산을 위한 테이블을 정의해줌
     INF = 21e8
@@ -44,20 +52,22 @@ for testcase in range(1, T):
             continue
         
         # 현재 위치에서 터널이 존재하는지 검사
-        tunnel = tunnels.get((x, y))
+        is_tunnel = tunnels.get((x, y))
         
         # 터널이 존재한다면 (None이 아니라면)
-        if tunnel is not None:
-            # 다음위치로 이동할때 드는 연료량, 터널이 이어진 위치
-            next_fuel, nx, ny = tunnel[2], tunnel[0], tunnel[1]
-            
-            # 다음위치로 이동할때까지 사용한 누적 연료량 계산
-            new_fuel = now_fuel + next_fuel
+        if is_tunnel is not None:
 
-            # 만약 이번 이동이 최저값이라면 fuel_table을 갱신, heappush(이동)
-            if new_fuel < fuel_table[nx][ny]:
-                fuel_table[nx][ny] = new_fuel
-                heappush(pq, (new_fuel, nx, ny))
+            for tunnel in is_tunnel:
+                # 다음위치로 이동할때 드는 연료량, 터널이 이어진 위치
+                next_fuel, nx, ny = tunnel[2], tunnel[0], tunnel[1]
+                
+                # 다음위치로 이동할때까지 사용한 누적 연료량 계산
+                new_fuel = now_fuel + next_fuel
+
+                # 만약 이번 이동이 최저값이라면 fuel_table을 갱신, heappush(이동)
+                if new_fuel < fuel_table[nx][ny]:
+                    fuel_table[nx][ny] = new_fuel
+                    heappush(pq, (new_fuel, nx, ny))
 
         # 상하좌우로 이동
         for i in range(4):
