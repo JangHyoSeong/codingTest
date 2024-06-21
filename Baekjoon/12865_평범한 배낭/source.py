@@ -1,21 +1,10 @@
-N, max_weight = map(int, input().split())
-arr = [list(map(int, input().split())) for _ in range(N)]
+N, K = map(int, input().split())
 
-def select(i, N, temp_value, temp_weight):
-    global max_value
-    if i == N:
-        if temp_weight <= max_weight and temp_value > max_value:
-            max_value = temp_value
-        return
+dp = [0] * (K+1)
+for i in range(N):
+    weight, value = map(int, input().split())
 
-    if temp_weight > max_weight:
-        return
-    
-    select(i+1, N, temp_value + arr[i][1], temp_weight + arr[i][0])
-    select(i+1, N, temp_value, temp_weight)
-    
+    for j in range(K, weight - 1, -1):
+        dp[j] = max(dp[j], dp[j-weight] + value)
 
-max_value = 0
-
-select(0, N, 0, 0)
-print(max_value)
+print(dp[K])
